@@ -32,7 +32,9 @@ class Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 500),
+      curve: Curves.bounceIn,
       width: 60,
       height: 60,
       decoration: BoxDecoration(
@@ -54,10 +56,14 @@ class Tile extends StatelessWidget {
   }
 }
 
-class GamePage extends StatelessWidget {
+class GamePage extends StatefulWidget {
   GamePage({super.key});
-  // This object is part of the game.dart file.
-  // It manages wordle logic, and is outside the scope of this tutorial.
+
+  @override
+  State<GamePage> createState() => _GamePageState();
+}
+
+class _GamePageState extends State<GamePage> {
   final Game _game = Game();
 
   @override
@@ -65,20 +71,25 @@ class GamePage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
-        spacing: 5.0,
         children: [
           for (var guess in _game.guesses)
             Row(
-              spacing: 5.0,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                for (var letter in guess) Tile(letter.char, letter.type),
+                for (var letter in guess)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2.5, vertical: 2.5),
+                    child: Tile(letter.char, letter.type),
+                  )
               ],
             ),
           GuessInput(
-            onSubmitGuess: (String guess) {
-              print(guess);
-            }
-            )
+           onSubmitGuess: (String guess) {
+              setState(() { // NEW
+                _game.guess(guess);
+              });
+            },
+          ),
         ],
       ),
     );
